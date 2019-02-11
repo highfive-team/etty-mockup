@@ -144,5 +144,7 @@ node makeTranslations
 ``` 
 and voila! Mocked files are being appeared in your `src/translations` folder. Now you can place some real data to your generated JSON files - this data won't be lost after further generations **(if you will not change your exist template scheme)**. The only thing you have to do by yourself is to serve this files with some API to make XHR requests :)
 
-Working example provided in the `example` folder of this repo. Fill free to make suggestions on how to improve it :)
+Working example provided in the `example` folder of this repo. Feel free to make suggestions on how to improve it :)
 
+## Contributing
+Feel free to submit issues, feature and pull requests. Any improvement is highly appreciated!
