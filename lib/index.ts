@@ -1,17 +1,34 @@
-export default function mockup<T>(template: T, locale: string, current: any = {}): T {
+export default 
+function mockup<T>(template: T, locale: string, current: any = {}, prefix?: string): T {
 	var mocked = {} as T
 	iterateObject(template, (value, path) => {
 		var existValue = readField(current, path)
 		if (!existValue) {
+			var valueKey = prefix
+				? `${prefix}.${path}`
+				: `${locale}:${path}`
+
 			if (Array.isArray(value))
-				writeField(mocked, path, value.map((_, i) => `${locale}:${path}_${i}`))
+				writeField(mocked, path, mockArray(value, valueKey))
 			else
-				writeField(mocked, path, `${locale}:${path}`)
+				writeField(mocked, path, valueKey)
 		} else {
 			writeField(mocked, path, existValue)
 		}
 	})
 	return mocked
+}
+
+function mockArray(array: any[], arrayPath: string): any[] {
+	return array.map((item, i) => {
+		var nextPath = `${arrayPath}_${i}`
+
+		return Array.isArray(item)
+			? mockArray(item, nextPath)
+			: typeof item == "object"
+				? mockup(item, "", {}, nextPath)
+				: nextPath
+	})
 }
 
 function iterateObject(

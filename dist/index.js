@@ -1,15 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-function mockup(template, locale, current) {
+function mockup(template, locale, current, prefix) {
     if (current === void 0) { current = {}; }
     var mocked = {};
     iterateObject(template, function (value, path) {
         var existValue = readField(current, path);
         if (!existValue) {
+            var valueKey = prefix
+                ? prefix + "." + path
+                : locale + ":" + path;
             if (Array.isArray(value))
-                writeField(mocked, path, value.map(function (_, i) { return locale + ":" + path + "_" + i; }));
+                writeField(mocked, path, mockArray(value, valueKey));
             else
-                writeField(mocked, path, locale + ":" + path);
+                writeField(mocked, path, valueKey);
         }
         else {
             writeField(mocked, path, existValue);
@@ -18,6 +21,16 @@ function mockup(template, locale, current) {
     return mocked;
 }
 exports.default = mockup;
+function mockArray(array, arrayPath) {
+    return array.map(function (item, i) {
+        var nextPath = arrayPath + "_" + i;
+        return Array.isArray(item)
+            ? mockArray(item, nextPath)
+            : typeof item == "object"
+                ? mockup(item, "", {}, nextPath)
+                : nextPath;
+    });
+}
 function iterateObject(object, callback, pathPrefix) {
     if (pathPrefix === void 0) { pathPrefix = ""; }
     Object.keys(object).forEach(function (key) {
